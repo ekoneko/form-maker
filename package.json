@@ -1,0 +1,24 @@
+{
+  "name": "form-maker",
+  "version": "1.0.0",
+  "description": "A react drag and drop form maker",
+  "main": "lib/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "compile": "rm -rf lib/* && tsc --outDir lib",
+    "prepublish": "npm run compile"
+  },
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "^2.3.4",
+    "@types/react": "^15.0.30",
+    "@types/react-dom": "^15.5.0"
+  },
+  "dependencies": {
+    "react": "^15.6.1",
+    "react-dnd": "^2.4.0",
+    "react-dnd-html5-backend": "^2.4.1",
+    "react-dom": "^15.6.1"
+  }
+}

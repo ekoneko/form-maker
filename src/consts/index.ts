@@ -1,0 +1,1 @@
+export const DRAG_PROTO_TYPE = 'DRAG_PROTO_TYPE'
