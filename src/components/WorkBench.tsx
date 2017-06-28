@@ -1,29 +1,67 @@
 import * as React from 'react'
-import { DropTarget } from 'react-dnd'
+import { DropTarget, connectDropTarget } from 'react-dnd'
 import { DRAG_PROTO_TYPE } from '../consts'
+import { IProtoListItem } from './ProtoItem'
+import { WorkItem, editClick } from './WorkItem'
 
-class WorkBench extends React.PureComponent<any, any> {
-    render() {
-        const { connectDropTarget } = this.props
-        return connectDropTarget(
-            <div style={{
-                width: 100,
-                height: 100,
-                border: '1px dashed #ccc'
-            }}>
-            </div>
-        )
-    }
+export interface IWorkBenchProps {
+  connectDropTarget: connectDropTarget;
+  style?: {};
+  onEditClick: editClick;
+}
+
+class WorkBenchRaw extends React.PureComponent<IWorkBenchProps, any> {
+  static defaultProps = {
+    style: {}
+  }
+
+  state = {
+    workItems: [] = [],
+  }
+
+  handleDrop = (item: IProtoListItem) => {
+    const {workItems} = this.state
+    workItems.push(item)
+    this.setState({workItems})
+  }
+
+  handleChange = (item) => {
+    //
+  }
+
+  render() {
+    const { style, connectDropTarget, onEditClick } = this.props
+    const { workItems } = this.state
+    return connectDropTarget(
+      <div style={style}>
+        {workItems.map(item => (
+          <WorkItem
+            key={item.id}
+            item={item}
+            onClick={onEditClick}
+            onChange={this.handleChange}
+          />
+        ))}
+      </div>
+    )
+  }
+}
+let gid = 0
+function genGid(): string {
+  gid += 1
+  return gid.toString()
 }
 const spec = {
-    drop(props, monitor, component) {
-        const {id} = monitor.getItem()
-        return {id}
-    },
+  drop(props, monitor, component) {
+    const {item} = monitor.getItem()
+    item.id = genGid()
+    component.handleDrop(item)
+    component.forceUpdate() // TODO: better way?
+  },
 }
 const collect = (connect, monitor) => {
-    return {
-        connectDropTarget: connect.dropTarget(),
-    }
+  return {
+    connectDropTarget: connect.dropTarget(),
+  }
 }
-export default DropTarget([DRAG_PROTO_TYPE], spec, collect)(WorkBench)
+export const WorkBench = DropTarget([DRAG_PROTO_TYPE], spec, collect)(WorkBenchRaw)

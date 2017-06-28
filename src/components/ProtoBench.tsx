@@ -1,16 +1,18 @@
 import * as React from 'react'
 
-import ProtoItem from './ProtoItem'
+import { ProtoItem, IProtoListItem } from './ProtoItem'
 
-class ProtoBench extends React.PureComponent<any, any> {
-    render() {
-
-        return (
-            <div>
-                <ProtoItem id="1">1</ProtoItem>
-                <ProtoItem id="2">2</ProtoItem>
-            </div>
-        )
-    }
+export interface IProtoBenchProps {
+  protoList: Array<IProtoListItem>;
 }
-export default ProtoBench
+
+export class ProtoBench extends React.PureComponent<IProtoBenchProps, null> {
+  render() {
+    const { protoList } = this.props
+    return (
+      <div>
+        {protoList.map(item => <ProtoItem key={item.type} item={item} />)}
+      </div>
+    )
+  }
+}

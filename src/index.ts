@@ -1,9 +1,4 @@
-import FormMaker from './components/FormMaker';
-import ProtoBench from './components/ProtoBench';
-import WorkBench from './components/WorkBench';
-
-export {
-    FormMaker,
-    ProtoBench,
-    WorkBench,
-}
+export * from './components/FormMaker';
+export * from './components/ProtoBench';
+export * from './components/WorkBench';
+export * from './components/ProtoItem';
