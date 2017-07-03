@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { DropTarget, connectDropTarget } from 'react-dnd'
-import { DRAG_PROTO_TYPE } from '../consts'
+import { DRAG_PROTO_TYPE, DRAG_WORK_TYPE } from '../consts'
 import { IProtoListItem } from './ProtoItem'
 import { WorkItem, editClick } from './WorkItem'
 
@@ -26,7 +26,14 @@ class WorkBenchRaw extends React.PureComponent<IWorkBenchProps, any> {
   }
 
   handleChange = (item) => {
-    //
+    const workItems = [...this.state.workItems]
+    for (let i = 0; i < workItems.length; i++) {
+      if (workItems[i].id === item.id) {
+        workItems[i] = item
+        break
+      }
+    }
+    this.setState({workItems})
   }
 
   render() {
@@ -64,4 +71,7 @@ const collect = (connect, monitor) => {
     connectDropTarget: connect.dropTarget(),
   }
 }
-export const WorkBench = DropTarget([DRAG_PROTO_TYPE], spec, collect)(WorkBenchRaw)
+export const WorkBench = DropTarget([
+  DRAG_PROTO_TYPE,
+  DRAG_WORK_TYPE,
+], spec, collect)(WorkBenchRaw)

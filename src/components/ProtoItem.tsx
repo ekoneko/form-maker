@@ -31,9 +31,6 @@ const spec = {
   beginDrag(props) {
     return {item: {...props.item}}
   },
-  endDrag(props, monitor) {
-    //
-  }
 }
 const collect = (connect, monitor) => {
   return {
