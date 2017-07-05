@@ -1,8 +1,10 @@
 import * as React from 'react'
 import { DropTarget, connectDropTarget } from 'react-dnd'
-import { DRAG_PROTO_TYPE, DRAG_WORK_TYPE } from '../consts'
+import { DRAG_PROTO_ITEM } from '../consts'
 import { IProtoListItem } from './ProtoItem'
 import { WorkItem, editClick } from './WorkItem'
+import {Simulate} from "react-dom/test-utils";
+import drag = Simulate.drag;
 
 export interface IWorkBenchProps {
   connectDropTarget: connectDropTarget;
@@ -19,10 +21,22 @@ class WorkBenchRaw extends React.PureComponent<IWorkBenchProps, any> {
     workItems: [] = [],
   }
 
+  /**
+   * Trigger when dropping an item from proto bench
+   */
   handleDrop = (item: IProtoListItem) => {
     const {workItems} = this.state
     workItems.push(item)
     this.setState({workItems})
+  }
+
+  /**
+   * Trigger when dragging and sorting from work bench
+   */
+  handleMove = (dragIndex: number, hoverIndex: number) => {
+    const newWorkItems = [...this.state.workItems]
+    newWorkItems.splice(hoverIndex, 0, newWorkItems.splice(dragIndex, 1)[0]);
+    this.setState({workItems: newWorkItems})
   }
 
   handleChange = (item) => {
@@ -41,18 +55,21 @@ class WorkBenchRaw extends React.PureComponent<IWorkBenchProps, any> {
     const { workItems } = this.state
     return connectDropTarget(
       <div style={style}>
-        {workItems.map(item => (
+        {workItems.map((item, index) => (
           <WorkItem
+            index={index}
             key={item.id}
             item={item}
             onClick={onEditClick}
             onChange={this.handleChange}
+            onMove={this.handleMove}
           />
         ))}
       </div>
     )
   }
 }
+
 let gid = 0
 function genGid(): string {
   gid += 1
@@ -60,10 +77,11 @@ function genGid(): string {
 }
 const spec = {
   drop(props, monitor, component) {
-    const {item} = monitor.getItem()
+    const { item } = monitor.getItem()
     item.id = genGid()
     component.handleDrop(item)
     component.forceUpdate() // TODO: better way?
+    return {item}
   },
 }
 const collect = (connect, monitor) => {
@@ -72,6 +90,5 @@ const collect = (connect, monitor) => {
   }
 }
 export const WorkBench = DropTarget([
-  DRAG_PROTO_TYPE,
-  DRAG_WORK_TYPE,
+  DRAG_PROTO_ITEM,
 ], spec, collect)(WorkBenchRaw)

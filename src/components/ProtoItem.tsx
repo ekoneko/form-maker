@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { DragSource, ConnectDragSource } from 'react-dnd'
-import { DRAG_PROTO_TYPE } from '../consts'
+import { DRAG_PROTO_ITEM } from '../consts'
 
 export type protoItemOnChange = (name: string, value: string|boolean|number) => void
 
@@ -29,6 +29,7 @@ class ProtoItemRaw extends React.PureComponent<IProtoItemProps , null> {
 }
 const spec = {
   beginDrag(props) {
+    // TODO: 应该在使用时复制对象
     return {item: {...props.item}}
   },
 }
@@ -37,4 +38,4 @@ const collect = (connect, monitor) => {
     connectDragSource: connect.dragSource()
   }
 }
-export const ProtoItem = DragSource(DRAG_PROTO_TYPE, spec, collect)(ProtoItemRaw)
+export const ProtoItem = DragSource(DRAG_PROTO_ITEM, spec, collect)(ProtoItemRaw)
