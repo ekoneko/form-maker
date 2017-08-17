@@ -16,7 +16,6 @@ export type editClick = (
 export interface IWorkItemProps {
   item: IProtoListItem;
   index: number;
-  onClick: editClick;
   onChange: (item: IProtoListItem) => void;
   onMove: (dragIndex: number, hoverIndex: number) => void;
   connectDragSource: ConnectDragSource;
@@ -24,9 +23,15 @@ export interface IWorkItemProps {
 }
 
 class WorkItemRaw extends React.PureComponent<IWorkItemProps, any> {
+  static contextTypes = {
+    editForm: React.PropTypes.element,
+    setEditForm: React.PropTypes.func,
+  }
+
   handleClick = () => {
-    const {onClick, item} = this.props
-    onClick(item.renderEditParam(item.params, this.handleChange))
+    const {item} = this.props
+    const editForm = item.renderEditParam(item.params, this.handleChange)
+    this.context.setEditForm(editForm)
   }
 
   handleChange = (name, value) => {

@@ -2,19 +2,23 @@ import * as React from 'react'
 import { DropTarget, connectDropTarget } from 'react-dnd'
 import { DRAG_PROTO_ITEM } from '../consts'
 import { IProtoListItem } from './ProtoItem'
-import { WorkItem, editClick } from './WorkItem'
-import {Simulate} from "react-dom/test-utils";
-import drag = Simulate.drag;
+import { WorkItem } from './WorkItem'
+
+export interface IResult {
+  type: string,
+  params: {},
+}
 
 export interface IWorkBenchProps {
   connectDropTarget: connectDropTarget;
+  onChange?: ([IResult]) => void;
   style?: {};
-  onEditClick: editClick;
 }
 
 class WorkBenchRaw extends React.PureComponent<IWorkBenchProps, any> {
   static defaultProps = {
-    style: {}
+    style: {},
+    onChange: () => {},
   }
 
   state = {
@@ -27,7 +31,7 @@ class WorkBenchRaw extends React.PureComponent<IWorkBenchProps, any> {
   handleDrop = (item: IProtoListItem) => {
     const {workItems} = this.state
     workItems.push(item)
-    this.setState({workItems})
+    this.changeWorkItems(workItems)
   }
 
   /**
@@ -35,8 +39,8 @@ class WorkBenchRaw extends React.PureComponent<IWorkBenchProps, any> {
    */
   handleMove = (dragIndex: number, hoverIndex: number) => {
     const newWorkItems = [...this.state.workItems]
-    newWorkItems.splice(hoverIndex, 0, newWorkItems.splice(dragIndex, 1)[0]);
-    this.setState({workItems: newWorkItems})
+    newWorkItems.splice(hoverIndex, 0, newWorkItems.splice(dragIndex, 1)[0])
+    this.changeWorkItems(newWorkItems)
   }
 
   handleChange = (item) => {
@@ -47,11 +51,21 @@ class WorkBenchRaw extends React.PureComponent<IWorkBenchProps, any> {
         break
       }
     }
+    this.changeWorkItems(workItems)
+  }
+
+  changeWorkItems = (workItems) => {
+    const {onChange} = this.props;
+    const result = workItems.map(items => {
+      const {type, params} = items;
+      return {type, params};
+    })
+    onChange(result);
     this.setState({workItems})
   }
 
   render() {
-    const { style, connectDropTarget, onEditClick } = this.props
+    const { style, connectDropTarget } = this.props
     const { workItems } = this.state
     return connectDropTarget(
       <div style={style}>
@@ -60,7 +74,6 @@ class WorkBenchRaw extends React.PureComponent<IWorkBenchProps, any> {
             index={index}
             key={item.id}
             item={item}
-            onClick={onEditClick}
             onChange={this.handleChange}
             onMove={this.handleMove}
           />
